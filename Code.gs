@@ -84,9 +84,15 @@ function doPost(e) {
 
     const lookupMode = String(payload.lookupMode || 'email').trim().toLowerCase();
     const imageUseAuthorization = normalizeChoice_(payload.imageUseAuthorization);
-    const imageUseAuthorizationBy = normalizeAuthorizationBy_(payload.imageUseAuthorizationBy || '');
+    const imageUseAuthorizationByType = normalizeAuthorizationBy_(payload.imageUseAuthorizationBy || '');
+    const guardianName = normalizePersonName_(payload.guardianName || '');
+    const imageUseAuthorizationBy = buildAuthorizationBy_(imageUseAuthorizationByType, guardianName);
 
     if (!imageUseAuthorization) throw new Error('Selecciona si autorizas o no autorizas el uso de imagen.');
+    if (!imageUseAuthorizationByType) throw new Error('Selecciona si autoriza el acudiente o el estudiante.');
+    if (imageUseAuthorizationByType === 'Madre/Padre/Acudiente' && !guardianName) {
+      throw new Error('Escribe el nombre del acudiente que autoriza.');
+    }
 
     const sheet = getSheet_();
     let result = null;
@@ -254,6 +260,7 @@ function sendNotificationEmail_(data) {
       'Documento: ' + (data.studentDocument || 'Sin documento registrado'),
       'Correo: ' + (data.studentEmail || 'Sin correo registrado'),
       'Fecha: ' + (data.updatedAt || ''),
+      'Autorizado por: ' + (data.imageUseAuthorizationBy || ''),
       'Autorización registrada: ' + (data.imageUseAuthorization || ''),
       documentNote,
       '',
@@ -269,6 +276,7 @@ function sendNotificationEmail_(data) {
       rowHtml_('Documento', data.studentDocument || 'Sin documento registrado') +
       rowHtml_('Correo', data.studentEmail || 'Sin correo registrado') +
       rowHtml_('Fecha', data.updatedAt || '') +
+      rowHtml_('Autorizado por', data.imageUseAuthorizationBy || '') +
       rowHtml_('Autorización registrada', data.imageUseAuthorization || '') +
       rowHtml_('Formato de documento', documentNote) +
       '</table>' +
@@ -351,6 +359,17 @@ function normalizeAuthorizationBy_(value) {
   if (text === 'estudiante') return 'Estudiante';
   if (['madre/padre/acudiente', 'madre padre acudiente', 'acudiente', 'madre', 'padre', 'tutor'].indexOf(text) !== -1) return 'Madre/Padre/Acudiente';
   return raw;
+}
+
+function normalizePersonName_(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ');
+}
+
+function buildAuthorizationBy_(authorizationByType, guardianName) {
+  if (authorizationByType === 'Madre/Padre/Acudiente') {
+    return authorizationByType + ' (' + guardianName + ')';
+  }
+  return authorizationByType;
 }
 
 function assertColumn_(sheet, column, label) {

@@ -172,6 +172,25 @@
                 </label>
               </div>
             </div>
+
+            <div class="field field-full authorization-by-field">
+              <label>¿Quién realiza esta autorización? *</label>
+              <div class="authorization-options">
+                <label class="authorization-card">
+                  <input type="radio" name="imageUseAuthorizationBy" value="Madre/Padre/Acudiente" required>
+                  <span>Madre, padre o acudiente</span>
+                </label>
+                <label class="authorization-card">
+                  <input type="radio" name="imageUseAuthorizationBy" value="Estudiante" required>
+                  <span>Estudiante</span>
+                </label>
+              </div>
+            </div>
+
+            <div id="guardianNameWrap" class="field field-full guardian-name-field hidden">
+              <label for="guardianName">Nombre del acudiente *</label>
+              <input type="text" id="guardianName" name="guardianName" placeholder="Nombre y apellido del acudiente" autocomplete="name" />
+            </div>
           </section>
         </div>
 

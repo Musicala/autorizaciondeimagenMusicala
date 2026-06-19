@@ -211,6 +211,8 @@ select {
 }
 .authorization-card input { width: 18px; height: 18px; accent-color: var(--primary); }
 .authorization-card:has(input:checked) { background: linear-gradient(135deg, var(--primary), var(--accent)); border-color: transparent; color: #fff; box-shadow: 0 12px 28px rgba(111,73,255,.28); transform: translateY(-2px); }
+.authorization-by-field { margin-top: 18px; }
+.guardian-name-field { margin-top: 14px; }
 
 .actions { padding:32px 36px; background:linear-gradient(180deg, #f8f4ff 0%, #fdfbff 100%); border-top:1px solid var(--stroke); display:flex; flex-direction:column; gap:14px; align-items:stretch; }
 .btn-primary, .btn-secondary { border-radius:var(--radius-md); font-family:'Roboto', sans-serif; cursor:pointer; transition: all .2s; }

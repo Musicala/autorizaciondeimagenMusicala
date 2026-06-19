@@ -24,6 +24,8 @@ const progressText = document.getElementById('progressText');
 const progressFill = document.getElementById('progressFill');
 const successModal = document.getElementById('successModal');
 const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+const guardianNameWrap = document.getElementById('guardianNameWrap');
+const guardianNameInput = document.getElementById('guardianName');
 
 let foundStudent = null;
 let lastLookup = { mode: 'email', email: '', documentType: '', documentNumber: '' };
@@ -34,6 +36,10 @@ function normalizeEmail(value) {
 
 function normalizeDocumentNumber(value) {
   return String(value || '').trim().replace(/\s+/g, '').replace(/[.\-]/g, '').toUpperCase();
+}
+
+function normalizeName(value) {
+  return String(value || '').trim().replace(/\s+/g, ' ');
 }
 
 function getLookupMode() {
@@ -81,7 +87,24 @@ function resetFoundStudent() {
   form.querySelectorAll('input[name="imageUseAuthorization"]').forEach((input) => {
     input.checked = false;
   });
+  form.querySelectorAll('input[name="imageUseAuthorizationBy"]').forEach((input) => {
+    input.checked = false;
+  });
+  guardianNameInput.value = '';
+  updateGuardianNameUI();
   updateProgress();
+}
+
+function isGuardianAuthorization(value) {
+  return value === 'Madre/Padre/Acudiente';
+}
+
+function updateGuardianNameUI() {
+  const imageUseAuthorizationBy = form.querySelector('input[name="imageUseAuthorizationBy"]:checked')?.value || '';
+  const shouldShow = isGuardianAuthorization(imageUseAuthorizationBy);
+  guardianNameWrap.classList.toggle('hidden', !shouldShow);
+  guardianNameInput.required = shouldShow;
+  if (!shouldShow) guardianNameInput.value = '';
 }
 
 function updateLookupUI() {
@@ -104,7 +127,10 @@ function updateProgress() {
   if (foundStudent) percent = 66;
 
   const auth = form.querySelector('input[name="imageUseAuthorization"]:checked');
-  if (foundStudent && identityConfirmed.checked && auth) percent = 100;
+  const authBy = form.querySelector('input[name="imageUseAuthorizationBy"]:checked');
+  const guardianName = normalizeName(guardianNameInput.value);
+  const guardianReady = authBy && (!isGuardianAuthorization(authBy.value) || guardianName.length >= 3);
+  if (foundStudent && identityConfirmed.checked && auth && guardianReady) percent = 100;
 
   progressText.textContent = `${percent}%`;
   progressFill.style.width = `${percent}%`;
@@ -222,9 +248,21 @@ async function saveAuthorization(event) {
   }
 
   const imageUseAuthorization = form.querySelector('input[name="imageUseAuthorization"]:checked')?.value || '';
+  const imageUseAuthorizationBy = form.querySelector('input[name="imageUseAuthorizationBy"]:checked')?.value || '';
+  const guardianName = normalizeName(guardianNameInput.value);
 
   if (!imageUseAuthorization) {
     showToast('Selecciona si autorizas o no autorizas antes de guardar.', 'error');
+    return;
+  }
+
+  if (!imageUseAuthorizationBy) {
+    showToast('Selecciona si autoriza el acudiente o el estudiante.', 'error');
+    return;
+  }
+
+  if (isGuardianAuthorization(imageUseAuthorizationBy) && guardianName.length < 3) {
+    showToast('Escribe el nombre del acudiente que autoriza.', 'error');
     return;
   }
 
@@ -234,7 +272,9 @@ async function saveAuthorization(event) {
     studentEmail: lastLookup.email,
     documentType: lastLookup.documentType,
     documentNumber: lastLookup.documentNumber,
-    imageUseAuthorization
+    imageUseAuthorization,
+    imageUseAuthorizationBy,
+    guardianName
   };
 
   setLoading(submitBtn, true, 'Guardando...', 'Guardar autorización');
@@ -296,5 +336,7 @@ bindIfExists(searchBtn, 'click', searchStudentByEmail);
 bindIfExists(searchDocBtn, 'click', searchStudentByDocument);
 bindIfExists(form, 'submit', saveAuthorization);
 bindIfExists(form, 'change', updateProgress);
+bindIfExists(form, 'change', updateGuardianNameUI);
+bindIfExists(guardianNameInput, 'input', updateProgress);
 bindIfExists(closeSuccessBtn, 'click', () => successModal.classList.add('hidden'));
 updateLookupUI();
