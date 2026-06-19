@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Autorización de imagen · Musicala</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236f49ff'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' font-size='34' fill='white' font-family='Arial'%3EM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@1,400;1,600&family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="bg-scene" aria-hidden="true">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+    <div class="note-float">✦</div><div class="note-float">·</div><div class="note-float">◦</div>
+    <div class="note-float">✦</div><div class="note-float">·</div><div class="note-float">◦</div>
+  </div>
+
+  <main class="app-shell">
+    <section class="hero-banner" aria-label="Autorización de uso de imagen Musicala">
+      <img src="./assets/autorizacion-imagen-header.png" alt="Autorización de uso de imagen Musicala" class="hero-banner-img" />
+    </section>
+
+    <section class="intro-card">
+      <span class="section-kicker">Proceso rápido</span>
+      <h1>Actualiza tu autorización de imagen</h1>
+      <p>Busca el registro del estudiante, confirma que los datos correspondan y selecciona si autorizas o no el uso de fotografías y videos.</p>
+    </section>
+
+    <div class="steps-strip" aria-label="Pasos del proceso">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Busca el registro</strong><span>Ingresa el correo registrado o el tipo y número de documento.</span></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Confirma los datos</strong><span>Revisa el nombre y documento antes de continuar.</span></div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Autoriza o no autoriza</strong><span>Tu respuesta se guarda en el registro existente.</span></div>
+      </div>
+    </div>
+
+    <section class="form-card">
+      <div class="form-header">
+        <div class="form-header-main">
+          <span class="section-kicker">Validación</span>
+          <h2>Consulta tu registro</h2>
+          <p>El sistema actualizará únicamente la autorización de imagen del estudiante encontrado.</p>
+        </div>
+        <div class="progress-wrap" aria-label="Progreso del formulario">
+          <div class="progress-label"><span>Progreso</span><span id="progressText">0%</span></div>
+          <div class="progress-bar"><div id="progressFill"></div></div>
+        </div>
+      </div>
+
+      <form id="authorizationForm" novalidate>
+        <div class="form-body">
+          <section class="form-section">
+            <div class="section-title-row">
+              <div class="section-icon">🔎</div>
+              <div>
+                <h3>Busca el estudiante</h3>
+                <p>Elige una de las dos opciones para encontrar el registro existente.</p>
+              </div>
+            </div>
+
+            <div class="lookup-mode-grid">
+              <label class="lookup-mode-card">
+                <input type="radio" name="lookupMode" value="email" checked>
+                <span>📧 Correo registrado</span>
+                <small>Usa el correo que quedó en la inscripción.</small>
+              </label>
+              <label class="lookup-mode-card">
+                <input type="radio" name="lookupMode" value="document">
+                <span>🪪 Documento</span>
+                <small>Selecciona el tipo y escribe el número.</small>
+              </label>
+            </div>
+
+            <div id="emailLookupWrap" class="lookup-row">
+              <div class="field">
+                <label for="studentEmail">Correo electrónico *</label>
+                <input type="email" id="studentEmail" name="studentEmail" placeholder="correo@ejemplo.com" autocomplete="email" />
+                <small class="hint">No se creará una fila nueva.</small>
+              </div>
+              <button type="button" id="searchBtn" class="btn-secondary">Buscar estudiante</button>
+            </div>
+
+            <div id="documentLookupWrap" class="lookup-row document-row hidden">
+              <div class="field doc-type-field">
+                <label for="studentDocumentType">Tipo *</label>
+                <select id="studentDocumentType" name="studentDocumentType">
+                  <option value="">Tipo</option>
+                  <option value="RC">RC</option>
+                  <option value="TI">TI</option>
+                  <option value="CC">CC</option>
+                  <option value="CE">CE</option>
+                  <option value="PAS">PAS</option>
+                  <option value="PPT">PPT</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="studentDocumentNumber">Número de documento *</label>
+                <input type="text" id="studentDocumentNumber" name="studentDocumentNumber" placeholder="Ej: 1000123456" inputmode="text" autocomplete="off" />
+                <small class="hint">Buscamos por número aunque la hoja tenga formatos anteriores.</small>
+              </div>
+              <button type="button" id="searchDocBtn" class="btn-secondary">Buscar estudiante</button>
+            </div>
+          </section>
+
+          <section id="studentBox" class="form-section hidden">
+            <div class="section-title-row">
+              <div class="section-icon">🎓</div>
+              <div>
+                <h3>Confirma los datos</h3>
+                <p>Verifica que el registro encontrado corresponda al estudiante correcto.</p>
+              </div>
+            </div>
+
+            <div class="student-summary">
+              <div><span>Nombre del estudiante</span><strong id="foundStudentName">—</strong></div>
+              <div><span>No. de documento</span><strong id="foundStudentDocument">—</strong><small id="documentFormatNote" class="summary-note"></small></div>
+              <div><span>Autorización actual</span><strong id="currentAuthorization">Sin registrar</strong></div>
+            </div>
+
+            <div class="confirmation-box">
+              <label class="inline-check strong-check">
+                <input type="checkbox" id="identityConfirmed" required />
+                Confirmo que estos datos corresponden al estudiante correcto.
+              </label>
+            </div>
+          </section>
+
+          <section id="authorizationBox" class="form-section hidden">
+            <div class="section-title-row">
+              <div class="section-icon">📸</div>
+              <div>
+                <h3>Uso de fotografías y videos</h3>
+                <p>Selecciona una respuesta para guardar la autorización en el registro del estudiante.</p>
+              </div>
+            </div>
+
+            <div class="terms-box soft">
+              <h4>Uso de fotografías y videos</h4>
+              <p>
+                En Musicala creemos que cada proceso artístico merece ser recordado y compartido. Durante clases, ensayos,
+                muestras, conciertos, talleres y demás actividades académicas o institucionales, podemos tomar fotografías
+                y videos de los estudiantes como parte del registro de su experiencia formativa.
+              </p>
+              <p>
+                Con tu autorización, este material podrá ser utilizado por Musicala en redes sociales, página web, YouTube
+                y demás canales oficiales con fines informativos, pedagógicos, culturales, promocionales y de memoria institucional.
+              </p>
+              <p class="question"><strong>¿Autorizas el uso de fotografías y videos del estudiante para los fines anteriormente descritos?</strong></p>
+            </div>
+
+            <div class="field field-full">
+              <label>Selecciona tu respuesta *</label>
+              <div class="authorization-options">
+                <label class="authorization-card yes-option">
+                  <input type="radio" name="imageUseAuthorization" value="Sí" required>
+                  <span>Sí autorizo</span>
+                </label>
+                <label class="authorization-card no-option">
+                  <input type="radio" name="imageUseAuthorization" value="No" required>
+                  <span>No autorizo</span>
+                </label>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="submitBtn" class="btn-primary" disabled>Guardar autorización</button>
+          <p class="footer-note">La respuesta se guardará en la fila existente del estudiante. Si buscaste por documento, también se normalizará el formato con el tipo seleccionado.</p>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+
+  <div id="successModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="success-icon">✓</div>
+      <h2>Autorización actualizada</h2>
+      <p>La respuesta quedó guardada correctamente en el registro existente del estudiante. También se envió la notificación a Musicala.</p>
+      <button id="closeSuccessBtn" class="btn-secondary">Cerrar</button>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
